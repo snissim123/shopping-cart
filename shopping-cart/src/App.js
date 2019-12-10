@@ -8,6 +8,9 @@ import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import firebase from 'firebase/app';
 import 'firebase/database';
+import 'firebase/auth';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import { Message, Title } from "rbx";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAyTBlA49bKh0fTIBXmdagnfO5ASSdfwDE",
@@ -17,6 +20,16 @@ const firebaseConfig = {
   storageBucket: "shopping-cart-a349c.appspot.com",
   messagingSenderId: "406377467757",
   appId: "1:406377467757:web:f7f737706a997297f51464"
+};
+
+const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: () => false
+  }
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -90,11 +103,21 @@ const cardStyles = makeStyles(theme => ({
 }));
 
 
+
+const SignIn = () => (
+  <StyledFirebaseAuth
+    uiConfig={uiConfig}
+    firebaseAuth={firebase.auth()}
+  />
+);
+
 const App = () => {
   const [data, setData] = useState({});
   const [openCart, setOpenCart] = useState(false);
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [user, setUser] = useState(null);
+
   const products = Object.values(data);
   const classes = cardStyles();
   useEffect(() => {
@@ -104,6 +127,27 @@ const App = () => {
     db.on('value', handleData, error => alert(error));
     return () => { db.off('value', handleData); };
   }, []);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(setUser);
+  }, []);
+
+  const Banner = ({ user }) => (
+    <React.Fragment>
+      { user ? <Welcome user={ user } /> : <SignIn /> }
+    </React.Fragment>
+  );
+  
+  const Welcome = ({ user }) => (
+    <Message color="info">
+      <Message.Header>
+        Welcome, {user.displayName}
+        <Button primary onClick={() => firebase.auth().signOut()}>
+          Log out
+        </Button>
+      </Message.Header>
+    </Message>
+  );
 
   const productDict = {};
   for (let i = 0; i < products.length; i += 1) {
@@ -179,6 +223,7 @@ const App = () => {
         </div>
         
       </Drawer>
+    <Banner user={ user } />
     <Typography className={classes.title}>T-Shirt Store</Typography>
     <Typography className={classes.grid}>{products.length} product(s) found.</Typography>
     <Grid container spacing={3} className={classes.grid}>       
