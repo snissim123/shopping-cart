@@ -6,6 +6,8 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAyTBlA49bKh0fTIBXmdagnfO5ASSdfwDE",
@@ -16,6 +18,9 @@ const firebaseConfig = {
   messagingSenderId: "406377467757",
   appId: "1:406377467757:web:f7f737706a997297f51464"
 };
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database().ref();
 
 const cardStyles = makeStyles(theme => ({
   grid: {
@@ -93,12 +98,11 @@ const App = () => {
   const products = Object.values(data);
   const classes = cardStyles();
   useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await fetch('./data/products.json');
-      const json = await response.json();
-      setData(json);
-    };
-    fetchProducts();
+    const handleData = snap => {
+      if (snap.val()) setData(snap.val());
+    }
+    db.on('value', handleData, error => alert(error));
+    return () => { db.off('value', handleData); };
   }, []);
 
   const productDict = {};
