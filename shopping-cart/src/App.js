@@ -76,7 +76,11 @@ const cardStyles = makeStyles(theme => ({
   cartTop: {
     margin: 30,
     float: "left"
-  }
+  },
+  removeProduct: {
+    width: 240,
+    align: "center"
+  },
 
 }));
 
@@ -126,6 +130,20 @@ const App = () => {
     setCart(cartCopy);
   };
 
+  const removeItem = (id) => {
+    let cartCopy = cart;
+    for (let i=0; i<cartCopy.length; i+=1){
+      if (cartCopy[i].productId === id) {
+        cartCopy[i].quantity -= 1;
+        if (cartCopy[i].quantity === 0) {
+          cartCopy.splice(i, 1);
+        }
+        break;
+      }
+    }
+    setCart(cartCopy);
+  };
+
   return (
   <div>
     <Button className={classes.cart} onClick={cartClick}>Cart</Button>
@@ -145,6 +163,7 @@ const App = () => {
         <Container className={classes.cartProducts}>
           <Typography>{product.product.title}      x {product.quantity}</Typography>
           <img src={"data/products/"+product.product.sku+"_1.jpg"} height="80" width="55"></img>
+          <Button className={classes.removeProduct} onClick={() => removeItem(product.product.sku)}>x</Button>
           <Divider/>
         </Container>
           
