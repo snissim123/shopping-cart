@@ -5,7 +5,17 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAyTBlA49bKh0fTIBXmdagnfO5ASSdfwDE",
+  authDomain: "shopping-cart-a349c.firebaseapp.com",
+  databaseURL: "https://shopping-cart-a349c.firebaseio.com",
+  projectId: "shopping-cart-a349c",
+  storageBucket: "shopping-cart-a349c.appspot.com",
+  messagingSenderId: "406377467757",
+  appId: "1:406377467757:web:f7f737706a997297f51464"
+};
 
 const cardStyles = makeStyles(theme => ({
   grid: {
@@ -48,7 +58,7 @@ const cardStyles = makeStyles(theme => ({
     paddingBottom: 10,
   },
   drawer: {
-    width: 200,
+    width: 300,
     flexShrink: 0,
     float: "left",
   },
@@ -58,6 +68,14 @@ const cardStyles = makeStyles(theme => ({
     textAlign: "center",
     margin: 20
     
+  },
+  cartProducts: {
+    float: "left",
+    marginTop: 20,
+  },
+  cartTop: {
+    margin: 30,
+    float: "left"
   }
 
 }));
@@ -121,8 +139,18 @@ const App = () => {
         }}
       >
         <Button onClick={cartClick}>x</Button>
-        <Typography><strong>Your Cart</strong></Typography>
-        {cart.map(product => <Typography>{cart.productId} </Typography>)}
+        <Typography className={classes.cartTop}><strong>Your Cart</strong></Typography>
+        <div>
+        {cart.map(product =>
+        <Container className={classes.cartProducts}>
+          <Typography>{product.product.title}      x {product.quantity}</Typography>
+          <img src={"data/products/"+product.product.sku+"_1.jpg"} height="80" width="55"></img>
+          <Divider/>
+        </Container>
+          
+          )}
+        </div>
+        
       </Drawer>
     <Typography className={classes.title}>T-Shirt Store</Typography>
     <Typography className={classes.grid}>{products.length} product(s) found.</Typography>
