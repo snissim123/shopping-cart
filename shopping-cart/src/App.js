@@ -89,6 +89,7 @@ const App = () => {
   const [data, setData] = useState({});
   const [openCart, setOpenCart] = useState(false);
   const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState(0);
   const products = Object.values(data);
   const classes = cardStyles();
   useEffect(() => {
@@ -128,6 +129,7 @@ const App = () => {
       })
     }
     setCart(cartCopy);
+    setTotal(total + productDict[id].price);
   };
 
   const removeItem = (id) => {
@@ -142,6 +144,7 @@ const App = () => {
       }
     }
     setCart(cartCopy);
+    setTotal(total - productDict[id].price);
   };
 
   return (
@@ -161,13 +164,14 @@ const App = () => {
         <div>
         {cart.map(product =>
         <Container className={classes.cartProducts}>
-          <Typography>{product.product.title}      x {product.quantity}</Typography>
+          <Typography><strong>{product.product.title}</strong></Typography>
+          <Typography>{product.quantity} x ${product.product.price}</Typography>
           <img src={"data/products/"+product.product.sku+"_1.jpg"} height="80" width="55"></img>
           <Button className={classes.removeProduct} onClick={() => removeItem(product.product.sku)}>x</Button>
           <Divider/>
         </Container>
-          
           )}
+          <Typography className={classes.cartTop}><strong>Cart total: ${total}</strong></Typography>
         </div>
         
       </Drawer>
